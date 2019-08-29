@@ -28,6 +28,7 @@ rownames(count_data)=data$Geneid
 sample.info=read.table(sampleinfo,sep='\t',header=FALSE,row.names=NULL,col.names=c('sample','condition','type'))
 sample.info=sample.info[match(colnames(count_data),sample.info$sample),]
 dds <- DESeqDataSetFromMatrix(count_data, colData=sample.info, design= ~ condition)
+dds$condition <- relevel(dds$condition, ref = "Control")
 dds <- dds[ rowSums(counts(dds)) > 10, ]
 dds <- DESeq(dds)
 res <- results(dds)
