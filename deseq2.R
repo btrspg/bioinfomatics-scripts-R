@@ -37,6 +37,10 @@ write.csv(resdata, paste(outdir,paste(tag,'des.all.output.csv',sep='-'),sep='/')
 write.csv(res,paste(outdir,paste(tag,'des.output.csv',sep='-'),sep='/') , row.names=TRUE,quote=FALSE)
 
 rld <- rlog(dds)
+vsd <- vst(dds)
+ntd <- normTransform(dds)
+
+
 
 rv = rowVars(assay(rld))/rowMeans(assay(rld))
 select = order(rv, decreasing=TRUE)[seq_len(min(500, length(rv)))]
@@ -52,6 +56,9 @@ ggsave(paste(outdir,paste(tag,'pca.png',sep='-'),sep='/'),pca)
 
 
 output = paste(outdir,paste(tag,'pheatmap.pdf',sep='-'),sep='/')
+sample_to_sample_output = paste(outdir,paste(tag,'sample2sample.pdf',sep='-'),sep='/')
+
+
 newres.padj1 =na.omit(res)[na.omit(res)$padj<0.01,]
 newres.padj5 =na.omit(res)[na.omit(res)$padj<0.05,]
 newres.p1 =na.omit(res)[na.omit(res)$pvalue<0.01,]
@@ -88,3 +95,16 @@ pheatmap(assay(rld)[rownames(newres),],
         scale = 'row',
         filename=output,
         main=paste('Heatmap of DEGs in ',threshold,sep=''))
+
+
+sampleDists <- dist(t(assay(vsd)))
+sampleDistMatrix <- as.matrix(sampleDists)
+rownames(sampleDistMatrix) <- paste(vsd$condition, vsd$type, sep="-")
+colnames(sampleDistMatrix) <- NULL
+colors <- colorRampPalette( rev(brewer.pal(9, "Blues")) )(255)
+pheatmap(sampleDistMatrix,
+         clustering_distance_rows=sampleDists,
+         clustering_distance_cols=sampleDists,
+         col=colors,
+         filename=sample_to_sample_output,
+         main='Sample to Sample Heatmap')
