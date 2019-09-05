@@ -43,8 +43,12 @@ ntd <- normTransform(dds)
 
 
 
-rv = rowVars(assay(rld))/rowMeans(assay(rld))
+sv = rowVars(assay(rld))/rowMeans(assay(rld))
+rv = rowVars(assay(rld))
+
 select = order(rv, decreasing=TRUE)[seq_len(min(500, length(rv)))]
+
+
 pcaData <- plotPCA(rld[select,], intgroup=c("condition", "type"), returnData=T)
 percentVar <- round(100*attr(pcaData, "percentVar"))
 pca <- ggplot(pcaData, aes(PC1, PC2, color=condition, shape=type)) +
@@ -54,7 +58,14 @@ pca <- ggplot(pcaData, aes(PC1, PC2, color=condition, shape=type)) +
 	ylab(paste0("PC2: ", percentVar[2], "% variance"))
 ggsave(paste(outdir,paste(tag,'pca.png',sep='-'),sep='/'),pca)
 
-
+pcaData <- plotPCA(rld, intgroup=c("condition", "type"), returnData=T)
+percentVar <- round(100*attr(pcaData, "percentVar"))
+pca <- ggplot(pcaData, aes(PC1, PC2, color=condition, shape=type)) +
+	geom_point(size=3) +
+	ggtitle("DESeq2 PCA") +
+	xlab(paste0("PC1: ", percentVar[1], "% variance")) +
+	ylab(paste0("PC2: ", percentVar[2], "% variance"))
+ggsave(paste(outdir,paste(tag,'pca-all.png',sep='-'),sep='/'),pca)
 
 output = paste(outdir,paste(tag,'pheatmap.pdf',sep='-'),sep='/')
 sample_to_sample_output = paste(outdir,paste(tag,'sample2sample.pdf',sep='-'),sep='/')
