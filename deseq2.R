@@ -68,6 +68,7 @@ pca <- ggplot(pcaData, aes(PC1, PC2, color=condition, shape=type)) +
 ggsave(paste(outdir,paste(tag,'pca-all.png',sep='-'),sep='/'),pca)
 
 output = paste(outdir,paste(tag,'pheatmap.pdf',sep='-'),sep='/')
+output2 = paste(outdir,paste(tag,'pheatmap-test.pdf',sep='-'),sep='/')
 sample_to_sample_output = paste(outdir,paste(tag,'sample2sample.pdf',sep='-'),sep='/')
 
 
@@ -107,6 +108,17 @@ pheatmap(assay(rld)[rownames(newres),],
         scale = 'row',
         filename=output,
         main=paste('Heatmap of DEGs in ',threshold,sep=''))
+
+pheatmap(assay(rld),
+        show_rownames=TRUE,
+        cellwidth = 22,
+        fontsize_row = 0.5,
+        cluster_cols=TRUE,
+        cluster_rows=FALSE,
+        annotation_col=colData,
+        scale = 'row',
+        filename=output2,
+        main=paste('Test Heatmap of DEGs in ',threshold,sep=''))
 
 
 sampleDists <- dist(t(assay(vsd)))
