@@ -23,10 +23,10 @@ my_output_file = args[2]
 
 mylist=read.table(my_list_file,sep='\t',header=FALSE)
 
-merge_data = read_featurecounts(toString(mylist[1,2]),toString(mylist[1,1]))
+merge_data = read_htseq(toString(mylist[1,2]),toString(mylist[1,1]))
 
 for(i in 2:dim(mylist)[1]){
-    temp = read_featurecounts(toString(mylist[i,2]),toString(mylist[i,1]))
+    temp = read_htseq(toString(mylist[i,2]),toString(mylist[i,1]))
     merge_data = merge(merge_data,temp,by.x='Geneid',by.y='Geneid',all.x=TRUE,all.y=TRUE)
 }
 
