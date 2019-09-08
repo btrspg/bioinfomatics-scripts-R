@@ -21,6 +21,11 @@ outdir=args[4]
 #args<-c('/aegis/temp/lncrna.txt','/aegis/projects/RESEARCH/WuHanXieHe-Prof.Kong-lncRNA_miRNA-20190808/sample.info.list' ,'mirna', '/aegis/projects/RESEARCH/WuHanXieHe-Prof.Kong-lncRNA_miRNA-20190808/results/')
 
 
+
+
+
+
+
 data = read.table(featurecounts,sep='\t',header=TRUE)
 count_data=as.matrix(data[,2:dim(data)[2]])
 rownames(count_data)=data$Geneid
@@ -56,6 +61,7 @@ percentVar <- round(100*attr(pcaData, "percentVar"))
 pca <- ggplot(pcaData, aes(PC1, PC2, color=condition, shape=type)) +
 	geom_point(size=3) +
 	ggtitle("DESeq2 PCA") +
+    geom_text(aes_string(x = "PC1", y = "PC2", label = "sample"), color = "black") +
 	xlab(paste0("PC1: ", percentVar[1], "% variance")) +
 	ylab(paste0("PC2: ", percentVar[2], "% variance"))
 ggsave(paste(outdir,paste(tag,'pca.png',sep='-'),sep='/'),pca)
