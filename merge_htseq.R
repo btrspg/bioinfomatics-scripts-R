@@ -10,7 +10,7 @@
 
 
 read_htseq <- function(featurecounts_file,sample_id) {
-    df = read.table(featurecounts_file,sep='\t',header=FALSE)
+    df = read.table(featurecounts_file,sep='\t',header=FALSE,comment.char = "_")
     colnames(df) = c('Geneid',sample_id)
     return(df)
 }
