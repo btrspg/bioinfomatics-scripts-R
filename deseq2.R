@@ -46,7 +46,7 @@ ntd <- normTransform(dds)
 sv = rowVars(assay(rld))/rowMeans(assay(rld))
 rv = rowVars(assay(rld))
 
-select = order(rv, decreasing=TRUE)[seq_len(min(500, length(rv)))]
+select = order(rv, decreasing=TRUE)[seq_len(min(100, length(rv)))]
 
 print(dim(rld[select,]))
 print(dim(rld))
