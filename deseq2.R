@@ -48,6 +48,8 @@ rv = rowVars(assay(rld))
 
 select = order(rv, decreasing=TRUE)[seq_len(min(500, length(rv)))]
 
+print(dim(rld[select,]))
+print(dim(rld))
 
 pcaData <- plotPCA(rld[select,], intgroup=c("condition", "type"), returnData=T)
 percentVar <- round(100*attr(pcaData, "percentVar"))
@@ -58,14 +60,14 @@ pca <- ggplot(pcaData, aes(PC1, PC2, color=condition, shape=type)) +
 	ylab(paste0("PC2: ", percentVar[2], "% variance"))
 ggsave(paste(outdir,paste(tag,'pca.png',sep='-'),sep='/'),pca)
 
-pcaData <- plotPCA(rld, intgroup=c("condition", "type"), returnData=T)
-percentVar <- round(100*attr(pcaData, "percentVar"))
-pca <- ggplot(pcaData, aes(PC1, PC2, color=condition, shape=type)) +
+pcaData2 <- plotPCA(rld, intgroup=c("condition", "type"), returnData=T)
+percentVar2 <- round(100*attr(pcaData2, "percentVar"))
+pca2 <- ggplot(pcaData2, aes(PC1, PC2, color=condition, shape=type)) +
 	geom_point(size=3) +
 	ggtitle("DESeq2 PCA") +
-	xlab(paste0("PC1: ", percentVar[1], "% variance")) +
-	ylab(paste0("PC2: ", percentVar[2], "% variance"))
-ggsave(paste(outdir,paste(tag,'pca-all.png',sep='-'),sep='/'),pca)
+	xlab(paste0("PC1: ", percentVar2[1], "% variance")) +
+	ylab(paste0("PC2: ", percentVar2[2], "% variance"))
+ggsave(paste(outdir,paste(tag,'pca-all.png',sep='-'),sep='/'),pca2)
 
 output = paste(outdir,paste(tag,'pheatmap.pdf',sep='-'),sep='/')
 output2 = paste(outdir,paste(tag,'pheatmap-test.pdf',sep='-'),sep='/')
