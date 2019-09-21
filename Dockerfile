@@ -17,7 +17,7 @@ RUN apt-get update && apt-get install --yes software-properties-common && \
     apt-get autoremove --purge --yes && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/*
-ADD *.R /usr/local/bin
+ADD *.R /usr/local/bin/
 
 CMD R
 
