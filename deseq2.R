@@ -60,9 +60,8 @@ pcaData <- plotPCA(rld[select,], intgroup=c("condition", "type"), returnData=T)
 percentVar <- round(100*attr(pcaData, "percentVar"))
 pca <- ggplot(pcaData, aes(PC1, PC2, color=condition, shape=type)) +
 	geom_point(size=3) +
-	ggtitle("DESeq2 PCA") +
-    geom_text(aes_string(x = "PC1", y = "PC2", label = "sample"), color = "black") +
-	xlab(paste0("PC1: ", percentVar[1], "% variance")) +
+	ggtitle("DESeq2 PCA") +geom_text(aes_string(x = "PC1", y = "PC2", label = "name"), color = "black") +
+    xlab(paste0("PC1: ", percentVar[1], "% variance")) +
 	ylab(paste0("PC2: ", percentVar[2], "% variance"))
 ggsave(paste(outdir,paste(tag,'pca.png',sep='-'),sep='/'),pca)
 
@@ -70,7 +69,7 @@ pcaData2 <- plotPCA(rld, intgroup=c("condition", "type"), returnData=T)
 percentVar2 <- round(100*attr(pcaData2, "percentVar"))
 pca2 <- ggplot(pcaData2, aes(PC1, PC2, color=condition, shape=type)) +
 	geom_point(size=3) +
-	ggtitle("DESeq2 PCA") +
+	ggtitle("DESeq2 PCA") +geom_text(aes_string(x = "PC1", y = "PC2", label = "name"), color = "black") +
 	xlab(paste0("PC1: ", percentVar2[1], "% variance")) +
 	ylab(paste0("PC2: ", percentVar2[2], "% variance"))
 ggsave(paste(outdir,paste(tag,'pca-all.png',sep='-'),sep='/'),pca2)
