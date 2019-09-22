@@ -18,6 +18,7 @@ RUN apt-get update && apt-get install --yes software-properties-common && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/*
 ADD *.R /usr/local/bin/
+RUN chmod +x /usr/local/bin/*
 
 CMD R
 
