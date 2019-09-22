@@ -38,10 +38,11 @@ rownames(count_data)=data$Geneid
 
 sample.info=read.table(sampleinfo,sep='\t',header=FALSE,row.names=NULL,col.names=c('sample','condition','batch','type'))
 sample.info=sample.info[match(colnames(count_data),sample.info$sample),]
-dds <- DESeqDataSetFromMatrix(count_data, colData=sample.info, design= ~ condition+batch)
+dds <- DESeqDataSetFromMatrix(count_data, colData=sample.info, design= ~ condition + batch)
 dds$condition <- relevel(dds$condition, ref = "Control")
+
 dds <- dds[ rowSums(counts(dds)) > 10, ]
-dds <- DESeq(dds)
+dds <- DESeq(dds,test='LRT',reduced = ~ batch)
 res <- results(dds)
 resdata <- merge(as.data.frame(res), as.data.frame(counts(dds, normalized=TRUE)),by="row.names",sort=FALSE)
 resdata <- data.frame(resdata[,-1], row.names=resdata[,1])
