@@ -18,21 +18,27 @@ sampleinfo=args[2]
 tag=args[3]
 outdir=args[4]
 
-#args<-c('/aegis/temp/lncrna.txt','/aegis/projects/RESEARCH/WuHanXieHe-Prof.Kong-lncRNA_miRNA-20190808/sample.info.list' ,'mirna', '/aegis/projects/RESEARCH/WuHanXieHe-Prof.Kong-lncRNA_miRNA-20190808/results/')
-
-
-
-
-
-
 
 data = read.table(featurecounts,sep='\t',header=TRUE)
 count_data=as.matrix(data[,2:dim(data)[2]])
 rownames(count_data)=data$Geneid
 
-sample.info=read.table(sampleinfo,sep='\t',header=FALSE,row.names=NULL,col.names=c('sample','condition','type'))
+#sample.info
+# AG18120501	Control	1812	c
+# AG18120502	Control	1812	c
+# AG18120503	Control	1812	c
+# AG19060501	Control	1906	c
+# AG19052202	Control	1905	c
+# AG18120505	D	1812	d1
+# AG18120506	D	1812	d1
+# AG19060502	D	1906	d1
+# AG19060503	D	1906	d1
+# AG18120504	D	1812	d2
+# AG19052205	D	1905	d2
+
+sample.info=read.table(sampleinfo,sep='\t',header=FALSE,row.names=NULL,col.names=c('sample','condition','batch','type'))
 sample.info=sample.info[match(colnames(count_data),sample.info$sample),]
-dds <- DESeqDataSetFromMatrix(count_data, colData=sample.info, design= ~ condition)
+dds <- DESeqDataSetFromMatrix(count_data, colData=sample.info, design= ~ condition+batch)
 dds$condition <- relevel(dds$condition, ref = "Control")
 dds <- dds[ rowSums(counts(dds)) > 10, ]
 dds <- DESeq(dds)
@@ -56,7 +62,7 @@ select = order(rv, decreasing=TRUE)[seq_len(min(100, length(rv)))]
 print(dim(rld[select,]))
 print(dim(rld))
 
-pcaData <- plotPCA(rld[select,], intgroup=c("condition", "type"), returnData=T)
+pcaData <- plotPCA(rld[select,], intgroup=c("condition" ,"type"), returnData=T)
 percentVar <- round(100*attr(pcaData, "percentVar"))
 pca <- ggplot(pcaData, aes(PC1, PC2, color=condition, shape=type)) +
 	geom_point(size=3) +
@@ -74,8 +80,37 @@ pca2 <- ggplot(pcaData2, aes(PC1, PC2, color=condition, shape=type)) +
 	ylab(paste0("PC2: ", percentVar2[2], "% variance"))
 ggsave(paste(outdir,paste(tag,'pca-all.png',sep='-'),sep='/'),pca2)
 
-output = paste(outdir,paste(tag,'pheatmap.pdf',sep='-'),sep='/')
-output2 = paste(outdir,paste(tag,'pheatmap-test.pdf',sep='-'),sep='/')
+
+sv = rowVars(assay(vsd))/rowMeans(assay(vsd))
+rv = rowVars(assay(vsd))
+
+select = order(rv, decreasing=TRUE)[seq_len(min(100, length(rv)))]
+
+print(dim(vsd[select,]))
+print(dim(vsd))
+
+pcaData <- plotPCA(vsd[select,], intgroup=c("condition" ,"type"), returnData=T)
+percentVar <- round(100*attr(pcaData, "percentVar"))
+pca <- ggplot(pcaData, aes(PC1, PC2, color=condition, shape=type)) +
+	geom_point(size=3) +
+	ggtitle("DESeq2 PCA") +geom_text(aes_string(x = "PC1", y = "PC2", label = "name"), color = "black") +
+    xlab(paste0("PC1: ", percentVar[1], "% variance")) +
+	ylab(paste0("PC2: ", percentVar[2], "% variance"))
+ggsave(paste(outdir,paste(tag,'vsd.pca.png',sep='-'),sep='/'),pca)
+
+pcaData2 <- plotPCA(vsd, intgroup=c("condition", "type"), returnData=T)
+percentVar2 <- round(100*attr(pcaData2, "percentVar"))
+pca2 <- ggplot(pcaData2, aes(PC1, PC2, color=condition, shape=type)) +
+	geom_point(size=3) +
+	ggtitle("DESeq2 PCA") +geom_text(aes_string(x = "PC1", y = "PC2", label = "name"), color = "black") +
+	xlab(paste0("PC1: ", percentVar2[1], "% variance")) +
+	ylab(paste0("PC2: ", percentVar2[2], "% variance"))
+ggsave(paste(outdir,paste(tag,'vsd.pca-all.png',sep='-'),sep='/'),pca2)
+
+output = paste(outdir,paste(tag,'rlog.pheatmap.pdf',sep='-'),sep='/')
+output2 = paste(outdir,paste(tag,'rlog.pheatmap-test.pdf',sep='-'),sep='/')
+output3 = paste(outdir,paste(tag,'vst.pheatmap.pdf',sep='-'),sep='/')
+output4 = paste(outdir,paste(tag,'vst.pheatmap-test.pdf',sep='-'),sep='/')
 sample_to_sample_output = paste(outdir,paste(tag,'sample2sample.pdf',sep='-'),sep='/')
 
 
@@ -127,6 +162,28 @@ pheatmap(assay(rld),
         filename=output2,
         main=paste('Test Heatmap of DEGs in ',threshold,sep=''))
 
+
+pheatmap(assay(vsd)[rownames(newres),],
+        show_rownames=TRUE,
+        cellwidth = 22,
+        fontsize_row = 0.5,
+        cluster_cols=TRUE,
+        cluster_rows=TRUE,
+        annotation_col=colData,
+        scale = 'row',
+        filename=output3,
+        main=paste('Heatmap of DEGs in ',threshold,sep=''))
+
+pheatmap(assay(vsd),
+        show_rownames=TRUE,
+        cellwidth = 22,
+        fontsize_row = 0.5,
+        cluster_cols=TRUE,
+        cluster_rows=TRUE,
+        annotation_col=colData,
+        scale = 'row',
+        filename=output4,
+        main=paste('Test Heatmap of DEGs in ',threshold,sep=''))
 
 sampleDists <- dist(t(assay(vsd)))
 sampleDistMatrix <- as.matrix(sampleDists)
