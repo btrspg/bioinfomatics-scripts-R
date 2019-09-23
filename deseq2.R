@@ -121,16 +121,16 @@ newres.p1 =na.omit(res)[na.omit(res)$pvalue<0.01,]
 newres.p5 =na.omit(res)[na.omit(res)$pvalue<0.05,]
 
 threshold = ''
-if(dim(newres.padj1)[1]>10){
+if(dim(newres.padj1)[1]>300){
     newres=newres.padj1
     threshold = 'padj(0.01)'
-}else if(dim(newres.padj5)[1]>10){
+}else if(dim(newres.padj5)[1]>300){
     newres=newres.padj5
     threshold = 'padj(0.05)'
-}else if(dim(newres.p1)[1]>10){
+}else if(dim(newres.p1)[1]>300){
     newres=newres.p1
     threshold = 'pvalue(0.01)'
-}else if(dim(newres.p5)[1]>10){
+}else if(dim(newres.p5)[1]>300){
     newres=newres.p5
     threshold = 'pvalue(0.05)'
 }else{
